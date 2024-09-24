@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Number Generator with Image Export</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f4f8;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            text-align: center;
+            padding: 40px;
+            border-radius: 20px;
+            background-color: white;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            max-width: 450px;
+            width: 100%;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 25px;
+            color: #2c3e50;
+            transition: color 0.3s ease;
+        }
+
+        label {
+            display: block;
+            font-size: 1rem;
+            color: #7f8c8d;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 20px;
+            border: 2px solid #3498db; /* Border color for visibility */
+            border-radius: 12px;
+            box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #2980b9; /* Focus color */
+            outline: none;
+        }
+
+        button {
+            padding: 14px 24px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            margin-top: 10px;
+            box-shadow: 0 8px 24px rgba(52, 152, 219, 0.3);
+        }
+
+        button:hover {
+            background-color: #2980b9;
+            box-shadow: 0 12px 30px rgba(52, 152, 219, 0.4);
+        }
+
+        .result {
+            margin-top: 25px;
+            font-size: 1.4rem;
+            text-align: center;
+        }
+
+        /* Loader animation */
+        .loader {
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .spacer {
+            margin-top: 20px;
+        }
+
+        /* Dark mode styles */
+        body.dark-mode {
+            background-color: #34495e;
+            color: #ecf0f1;
+        }
+
+        .container.dark-mode {
+            background-color: #2c3e50;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        h1.dark-mode {
+            color: #ecf0f1;
+        }
+
+        label.dark-mode {
+            color: #ecf0f1; /* Changed label color for dark mode */
+        }
+
+        input.dark-mode {
+            border-color: #7f8c8d; /* Dark border color */
+            background-color: #34495e;
+            color: #ecf0f1;
+        }
+
+        input.dark-mode:focus {
+            border-color: #3498db;
+        }
+
+        button.dark-mode {
+            background-color: #2980b9;
+        }
+
+        button.dark-mode:hover {
+            background-color: #1a5276;
+        }
+
+        /* Result text color for dark mode */
+        .result.dark-mode {
+            color: #ecf0f1; /* Text color for results in dark mode */
+        }
+
+        /* Result text color for light mode */
+        .result.light-mode {
+            color: #2c3e50; /* Text color for results in light mode */
+        }
+
+        /* Toggle Switch Styles */
+        .toggle-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .toggle-label {
+            margin: 0 10px; /* Add spacing around labels */
+            color: #34495e; /* Default text color */
+        }
+
+        .switch {
+            position: relative;
+            width: 60px;
+            height: 34px;
+            margin: 0;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #3498db;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Canvas styling for image export */
+        #canvas {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="toggle-container">
+        <label class="toggle-label">Light Mode</label>
+        <label class="switch">
+            <input type="checkbox" id="modeSwitch" onchange="toggleMode()">
+            <span class="slider"></span>
+        </label>
+        <label class="toggle-label">Dark Mode</label>
+    </div>
+    
+    <h1>Random Number Generator</h1>
+    <label for="minNumber">Enter Minimum Number:</label>
+    <input type="number" id="minNumber" placeholder="Min number" required>
+    <label for="maxNumber">Enter Maximum Number:</label>
+    <input type="number" id="maxNumber" placeholder="Max number" required>
+    <button onclick="startGeneration()">Generate</button>
+
+    <div class="result">
+        <div id="loader" class="loader hidden"></div>
+        <div id="output"></div>
+    </div>
+
+    <!-- Spacer to add distance between result and button -->
+    <div class="spacer"></div>
+
+    <button id="exportButton" class="hidden" onclick="exportImage()">Save Result</button>
+
+    <canvas id="canvas"></canvas>
+</div>
+
+<script>
+    let randomNumber;
+    let dateTime;
+    let timezone = "Europe/London";  // UK London Timezone
+
+    function startGeneration() {
+        // Clear previous result and show loader
+        document.getElementById('output').innerHTML = '';
+        document.getElementById('loader').classList.remove('hidden');
+        document.getElementById('exportButton').classList.add('hidden');
+
+        // Delay the generation for 3 seconds to simulate the loading animation
+        setTimeout(generateRandomNumber, 3000);
+    }
+
+    function generateRandomNumber() {
+        // Get user input for min and max numbers
+        const min = parseInt(document.getElementById('minNumber').value);
+        const max = parseInt(document.getElementById('maxNumber').value);
+
+        // Validate input
+        if (isNaN(min) || isNaN(max) || min >= max) {
+            alert("Please enter valid numbers with min less than max.");
+            document.getElementById('loader').classList.add('hidden');
+            return;
+        }
+
+        // Generate random number
+        randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+
+        // Get current date and time in London timezone
+        const now = new Date().toLocaleString("en-GB", { timeZone: timezone });
+        dateTime = now;
+
+        // Hide loader and display result
+        document.getElementById('loader').classList.add('hidden');
+        document.getElementById('output').innerHTML = `
+            <p class="result light-mode">Random Number: <strong>${randomNumber}</strong></p>
+            <p class="result light-mode">Generated on: <strong>${dateTime}</strong></p>
+            <p class="result light-mode">Based on the United Kingdom time</p>
+        `;
+        document.getElementById('exportButton').classList.remove('hidden');
+    }
+
+    function exportImage() {
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 400; // Set width of canvas
+        canvas.height = 300; // Set height of canvas
+
+        // Create gradient background
+        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        gradient.addColorStop(0, '#3498db');
+        gradient.addColorStop(1, '#ecf0f1');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Set text properties
+        ctx.fillStyle = "#2c3e50"; // Changed to a visible color
+        ctx.font = "bold 22px Poppins"; // Slightly smaller font size
+        ctx.textAlign = "center";
+
+        // Centered text display
+        ctx.fillText("Random Number: " + randomNumber, canvas.width / 2, 80);
+        ctx.fillText("Generated on: " + dateTime, canvas.width / 2, 130);
+        ctx.fillText("Based on the United Kingdom time", canvas.width / 2, 180);
+
+        // Export the canvas to image
+        const link = document.createElement('a');
+        link.download = 'random_number.png';
+        link.href = canvas.toDataURL();
+        link.click();
+    }
+
+    function toggleMode() {
+        const body = document.body;
+        const container = document.querySelector('.container');
+        const inputs = document.querySelectorAll('input');
+        const buttons = document.querySelectorAll('button');
+
+        body.classList.toggle('dark-mode');
+        container.classList.toggle('dark-mode');
+        inputs.forEach(input => input.classList.toggle('dark-mode'));
+        buttons.forEach(button => button.classList.toggle('dark-mode'));
+
+        // Toggle header color
+        const header = document.querySelector('h1');
+        header.classList.toggle('dark-mode');
+
+        // Update toggle labels
+        const labels = document.querySelectorAll('.toggle-label');
+        labels.forEach(label => {
+            label.style.color = body.classList.contains('dark-mode') ? '#ecf0f1' : '#34495e';
+        });
+
+        // Update result text color
+        const results = document.querySelectorAll('.result');
+        results.forEach(result => {
+            result.classList.toggle('dark-mode');
+            result.classList.toggle('light-mode');
+        });
+    }
+</script>
+</body>
+</html>
