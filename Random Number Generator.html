@@ -59,17 +59,18 @@
         }
 
         button {
-            padding: 14px 24px;
+            padding: 10px 18px; /* Reduced padding for smaller button */
             background-color: #3498db;
             color: white;
             border: none;
             border-radius: 12px;
             cursor: pointer;
-            width: 100%;
+            width: auto; /* Centered button width */
             font-size: 1rem;
             transition: background-color 0.3s ease, box-shadow 0.3s ease;
             margin-top: 10px;
             box-shadow: 0 8px 24px rgba(52, 152, 219, 0.3);
+            display: inline-block; /* To center align */
         }
 
         button:hover {
@@ -236,6 +237,8 @@
     <input type="number" id="minNumber" placeholder="Min number" required>
     <label for="maxNumber">Enter Maximum Number:</label>
     <input type="number" id="maxNumber" placeholder="Max number" required>
+    
+    <!-- Center the button -->
     <button onclick="startGeneration()">Generate</button>
 
     <div class="result">
